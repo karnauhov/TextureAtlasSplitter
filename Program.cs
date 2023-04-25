@@ -22,7 +22,7 @@ internal class Program
                 Console.WriteLine("File '{0}' does not exist. Please, specify correct path to file.", args[0]);
                 return;
             }
-            string? fileDirectory = Path.GetDirectoryName(args[0]);
+            string? fileDirectory = Path.GetDirectoryName(Path.GetFullPath(args[0]));
             string directory = fileDirectory + Path.DirectorySeparatorChar + "textures" + Path.DirectorySeparatorChar;
             if (!Directory.Exists(directory)) 
             {
@@ -41,7 +41,7 @@ internal class Program
                     string? imagePath = xmlReader.GetAttribute("imagePath");
                     if (xmlReader.HasAttributes && imagePath != null && imagePath != string.Empty)
                     {
-                        string fullImagePath = imagePath.Contains(Path.DirectorySeparatorChar) ? imagePath : Path.GetDirectoryName(args[0]) + Path.DirectorySeparatorChar + imagePath;
+                        string fullImagePath = imagePath.Contains(Path.DirectorySeparatorChar) || Path.GetDirectoryName(args[0]) == string.Empty ? imagePath : (Path.GetDirectoryName(args[0]) + Path.DirectorySeparatorChar + imagePath);
                         if (File.Exists(fullImagePath))
                         {
                             fullTextureAtlas = Image.FromFile(fullImagePath);
@@ -101,6 +101,7 @@ internal class Program
                                 gr.DrawImage(fullTextureAtlas, new Rectangle(0, 0, subTexture.Width, subTexture.Height), crop, GraphicsUnit.Pixel);
                             }
                             subTexture.Save(directory + name + ".png", ImageFormat.Png);
+                            Console.WriteLine(directory + name + ".png");
                         }
                         catch (Exception imageException)
                         {
